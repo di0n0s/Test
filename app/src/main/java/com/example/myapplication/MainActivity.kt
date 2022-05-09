@@ -1,12 +1,12 @@
 package com.example.myapplication
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.myapplication.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -33,14 +33,19 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.userState.collect {
                 when (it) {
-                    is GetUserState.Error -> Log.e("userState", "error")
+                    is GetUserState.Error -> showError(it.error)
                     GetUserState.Idle -> {}
-                    GetUserState.Loading -> Log.e("userState", "Loading")
                     is GetUserState.Success -> renderUI(it.user)
+                    is GetUserState.Loading -> {}
                 }
             }
         }
 
+    }
+
+    private fun showError(error: String?) {
+        Snackbar.make(binding.root, error ?: getString(R.string.common_error), Snackbar.LENGTH_LONG)
+            .show()
     }
 
     private fun renderUI(user: User) {
