@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="full_name">%1$s %2$s</string>
+    <string name="common_error">There was an error</string>
 </resources>

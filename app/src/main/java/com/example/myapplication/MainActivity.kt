@@ -2,33 +2,57 @@ package com.example.myapplication
 
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.example.myapplication.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var apiService: ApiService
+    private lateinit var binding: ActivityMainBinding
+
+    private val viewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        collectState()
+        getUser()
+    }
 
-        apiService = Retrofit.Builder()
-            .baseUrl("https://reqres.in/api/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ApiService::class.java)
-
+    private fun getUser() {
         lifecycleScope.launch {
-            val user = apiService.getUser("2").data
-            Log.e("id", user.id)
-            Log.e("avatar", user.avatar)
-            Log.e("email", user.email)
-            Log.e("first_name", user.first_name)
-            Log.e("last_name", user.last_name)
+            viewModel.userIntent.send(UserIntent.GetUser("2"))
+        }
+    }
+
+    private fun collectState() {
+        lifecycleScope.launch {
+            viewModel.userState.collect {
+                when (it) {
+                    is GetUserState.Error -> Log.e("userState", "error")
+                    GetUserState.Idle -> {}
+                    GetUserState.Loading -> Log.e("userState", "Loading")
+                    is GetUserState.Success -> renderUI(it.user)
+                }
+            }
+        }
+
+    }
+
+    private fun renderUI(user: User) {
+        with(binding) {
+            Glide.with(this@MainActivity)
+                .load(user.avatar)
+                .into(imageView)
+
+            fullNameTextView.text =
+                getString(R.string.full_name, user.first_name, user.last_name)
+
+            emailTextView.text = user.email
         }
     }
 }
