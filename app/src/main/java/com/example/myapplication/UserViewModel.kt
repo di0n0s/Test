@@ -13,15 +13,16 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class UserViewModel(
     private val id: String,
-    private val iODispatcher: CoroutineDispatcher = Dispatchers.IO
-) : ViewModel() {
-
+    private val iODispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val apiService: ApiService = Retrofit.Builder()
         .baseUrl("https://reqres.in/api/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-        .create(ApiService::class.java)
-
+        .create(
+            ApiService::
+            class.java
+        )
+) : ViewModel() {
 
     private val _userState: MutableStateFlow<GetUserState> by lazy {
         MutableStateFlow<GetUserState>(GetUserState.Idle).also {
