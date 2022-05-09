@@ -12,13 +12,15 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class UserViewModel(private val iODispatcher: CoroutineDispatcher = Dispatchers.IO) : ViewModel() {
-
+class UserViewModel(
+    private val iODispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val apiService: ApiService = Retrofit.Builder()
         .baseUrl("https://reqres.in/api/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(ApiService::class.java)
+) : ViewModel() {
+
 
     val userIntent = Channel<UserIntent>(Channel.UNLIMITED)
 
