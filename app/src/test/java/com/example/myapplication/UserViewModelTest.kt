@@ -1,13 +1,12 @@
 package com.example.myapplication
 
+import app.cash.turbine.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -19,7 +18,7 @@ class UserViewModelTest {
 
     private lateinit var viewModel: UserViewModel
 
-    private val ioDispatcher = StandardTestDispatcher()
+    private val ioDispatcher = TestCoroutineDispatcher()
 
     private val userId = "2"
 
@@ -57,8 +56,9 @@ class UserViewModelTest {
         Mockito.`when`(userResponse.data).thenReturn(user)
 
         //WHEN
-        viewModel.userState.collectLatest {
-
+        viewModel.userState.test {
+            Assert.assertEquals(GetUserState.Success(user), expectMostRecentItem())
+            awaitComplete()
         }
 
         //THEN

@@ -63,4 +63,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:4.1.0'
 
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1'
+
+    testImplementation 'app.cash.turbine:turbine:0.8.0'
 }
